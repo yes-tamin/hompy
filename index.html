@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>우리들의 미니 홈피</title>
+    <style>
+        /* 나중에 마히가 원하는 디자인으로 바꿀 수 있는 영역이야! */
+        body { font-family: 'Arial', sans-serif; background-color: #f0f2f5; padding: 20px; }
+        .post-card { background: white; margin-bottom: 20px; padding: 15px; border-radius: 10px; shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .post-card img { max-width: 100%; border-radius: 5px; }
+        .post-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <h1>내 깃허브 홈피 🚀</h1>
+    <div id="content-list">
+        <p>글을 불러오는 중입니다...</p>
+    </div>
+
+    <script>
+        // 1. 나중에 만들 GAS 배포 URL을 여기에 넣을 거야
+        const GAS_URL = "여기에_GAS_웹앱_URL을_넣으세요"; 
+
+        async function loadPosts() {
+            try {
+                const response = await fetch(GAS_URL);
+                const data = await response.json(); // 시트 데이터를 JSON으로 받음
+                
+                const listContainer = document.getElementById('content-list');
+                listContainer.innerHTML = ''; // 로딩 메시지 삭제
+
+                // 2. 데이터를 반복하며 화면에 그려주기
+                data.forEach(post => {
+                    const card = document.createElement('div');
+                    card.className = 'post-card';
+                    
+                    // 이미지가 있을 경우에만 img 태그 생성 (구글 드라이브 연동 로직)
+                    const imgHtml = post.imageID ? `<img src="https://drive.google.com/uc?export=view&id=${post.imageID}">` : '';
+
+                    card.innerHTML = `
+                        <div class="post-title">${post.title}</div>
+                        <div class="post-date">${post.date}</div>
+                        ${imgHtml}
+                        <p>${post.content}</p>
+                    `;
+                    listContainer.appendChild(card);
+                });
+            } catch (error) {
+                console.error("데이터 로딩 실패:", error);
+                document.getElementById('content-list').innerHTML = "데이터를 가져오지 못했어요. GAS URL을 확인해봐!";
+            }
+        }
+
+        // 페이지가 열리면 실행
+        loadPosts();
+    </script>
+</body>
+</html>
